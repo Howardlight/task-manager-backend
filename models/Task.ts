@@ -1,23 +1,19 @@
 import mongoose, { Schema, model } from "mongoose";
 
 export interface ITask extends Document {
-    // _id: mongoose.Schema.Types.ObjectId;
     title: string;
     description: string;
     dueDate: Date;
+    completed: boolean;
 }
 
 const TaskSchema: Schema = new Schema({
-    // _id: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     index: true,
-    //     auto: true
-    // },
     title: {
         type: String,
         required: true,
         maxLength: [24, "Title cannot be bigger than 24 characters."],
-        index: true
+        index: true,
+        unique: true
     },
     description: {
         type: String,
@@ -27,7 +23,13 @@ const TaskSchema: Schema = new Schema({
     dueDate: {
         type: Date,
         required: true,
-        index: true
+        index: true,
+        default: Date.now
+    },
+    completed: {
+        type: Boolean,
+        required: false,
+        default: false
     }
 });
 
