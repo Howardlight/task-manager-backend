@@ -24,7 +24,7 @@ exports.findAll = async (req: Request, res: Response, next: any) => {
         const tasks = await Task.find();
 
         res.status(200).send(tasks);
-    } catch (error: any) {
-        next(error);
-    }
+    } catch (error: any) { next(error); }
+}
+
 }
