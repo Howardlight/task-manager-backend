@@ -1,5 +1,9 @@
 require('dotenv').config({ path: './config.env' });
 
+const cors = require("cors");
+const morgan = require("morgan");
+const helmet = require("helmet");
+
 import express from "express";
 import { connectDB } from "./config/db";
 
@@ -11,8 +15,11 @@ const PORT = process.env.PORT || 5000;
 
 //connect to db
 connectDB()
+app.use(cors()); // Enable CORS for all requests
+app.use(morgan("combined")); //  log HTTP Requests
+app.use(express.json()); // Parse JSON
+app.use(helmet()) // enhance API security
 
-app.use(express.json());
 app.use("/api/task", require("./routes/task"));
 
 //ErrorHandler (Should be last piece of middleware)
