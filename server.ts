@@ -18,8 +18,7 @@ const errorHandler = require('./middleware/error')
 connectDB()
 
 app.use(express.json());
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api/private", require("./routes/private"));
+app.use("/api/task", require("./routes/auth"));
 
 //ErrorHandler (Should be last piece of middleware)
 app.use(errorHandler);
