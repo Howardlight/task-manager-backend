@@ -11,7 +11,7 @@ const TaskSchema: Schema = new Schema({
     title: {
         type: String,
         required: true,
-        maxLength: [24, "Title cannot be bigger than 24 characters."],
+        maxLength: [48, "Title cannot be bigger than 48 characters."],
         index: true,
         unique: true
     },
