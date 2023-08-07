@@ -1,11 +1,6 @@
 require('dotenv').config({ path: './config.env' });
 
 import express from "express";
-import cors from "cors";
-import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
-import { json } from 'body-parser'
-import mongoose from 'mongoose'
 import { connectDB } from "./config/db";
 
 
@@ -18,7 +13,7 @@ const errorHandler = require('./middleware/error')
 connectDB()
 
 app.use(express.json());
-app.use("/api/task", require("./routes/auth"));
+app.use("/api/task", require("./routes/task"));
 
 //ErrorHandler (Should be last piece of middleware)
 app.use(errorHandler);
