@@ -27,4 +27,60 @@ exports.findAll = async (req: Request, res: Response, next: any) => {
     } catch (error: any) { next(error); }
 }
 
+exports.updateTaskDescription = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id } = req.params;
+        const { newDescription } = req.body;
+
+        const task = await Task.findById(id);
+        if (!task) return res.status(404).send(`Task not found`);
+
+        task.description = newDescription;
+        await task.save();
+
+        res.status(200).send(`Description of Task ${id} updated`);
+    } catch (error: any) { next(error); };
+}
+
+exports.markTaskCompleted = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id } = req.params;
+
+        const task = await Task.findById(id);
+        if (!task) return res.status(404).send(`Task not found`);
+        if (task.completed) return res.status(400).send(`Task ${id} already complete`)
+
+        task.completed = true;
+        await task.save();
+
+        res.status(200).send(`Marked Task ${id} completed`);
+    } catch (error: any) { next(error); };
+}
+
+exports.updateTaskTitle = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id } = req.params;
+        const { title } = req.body;
+
+        const task = await Task.findById(id);
+        if (!task) return res.status(404).send(`Task not found`);
+
+        task.title = title;
+        await task.save();
+
+        res.status(200).send(`Title of Task ${id} updated`);
+    } catch (error: any) { next(error); };
+}
+
+exports.deleteTask = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id } = req.params;
+
+        const task = await Task.findById(id);
+        if (!task) return res.status(404).send(`Task not found`);
+
+        await task.deleteOne();
+
+        res.status(200).send(`Deleted Task ${id}`);
+    } catch (error: any) { next(error); };
 }
