@@ -23,7 +23,7 @@ exports.findAll = async (req: Request, res: Response, next: any) => {
     try {
         const tasks = await Task.find();
 
-        res.status(200).send(tasks);
+        res.status(200).send(JSON.stringify(tasks));
     } catch (error: any) { next(error); }
 }
 
