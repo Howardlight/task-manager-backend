@@ -27,6 +27,31 @@ exports.findAll = async (req: Request, res: Response, next: any) => {
     } catch (error: any) { next(error); }
 }
 
+exports.updateTask = async (req: Request, res: Response, next: any) => {
+    try {
+        const { id } = req.params;
+        let { description, title, dueDate, completed } = req.body;
+
+        const task = await Task.findById(id);
+        if (!task) return res.status(404).send(`Task not found`);
+
+        if (!dueDate) dueDate = Date.now();
+        if (!completed) completed = task.completed;
+
+        if (!description) throw "Missing description!";
+        if (!title) throw "Missing title!";
+
+        task.description = description;
+        task.title = title;
+        task.dueDate = dueDate;
+        task.completed = completed;
+        await task.save();
+
+        res.status(200).send(task.toJSON());
+    } catch (error: any) { next(error); };
+}
+
+
 exports.updateTaskDescription = async (req: Request, res: Response, next: any) => {
     try {
         const { id } = req.params;
