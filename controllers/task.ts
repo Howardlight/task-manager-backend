@@ -1,5 +1,6 @@
 import { Response, Request } from "express";
 import { Task } from "../models/Task";
+import { SortOrder } from "mongoose";
 
 exports.create = async (req: Request, res: Response, next: any) => {
     const { title, description, dueDate } = req.body;
@@ -22,14 +23,42 @@ exports.create = async (req: Request, res: Response, next: any) => {
 interface FindAllQuery {
     limit: string;
     offset: string;
+    completed: SortOrder | undefined, // 0, complete | 1, incomplete | null, do not sort
+    date: SortOrder | undefined, // 0 ascending | 1, descending | null do not sort 
 }
 
 exports.findAll = async (req: Request, res: Response, next: any) => {
     try {
+        let tasksCollection;
+
         const limit = parseInt((req.query as unknown as FindAllQuery).limit);
         const offset = parseInt((req.query as unknown as FindAllQuery).offset);
+        let { completed, date } = req.query as unknown as FindAllQuery;
 
-        const tasksCollection = await Task.find().skip(offset).limit(limit);
+
+
+        // This case is pointless
+        if (completed && date) tasksCollection = await Task
+            .find()
+            .sort({ "dueDate": date, "completed": completed })
+            .skip(offset)
+            .limit(limit);
+
+        else if (completed && !date) tasksCollection = await Task
+            .find()
+            .sort({ "completed": completed })
+            .skip(offset)
+            .limit(limit);
+
+        else if (!completed && date) tasksCollection = await Task
+            .find()
+            .sort({ "dueDate": date })
+            .skip(offset)
+            .limit(limit);
+
+        else tasksCollection = await Task.find().skip(offset).limit(limit);
+
+
         const taskCollectionCount = await Task.count();
 
         const totalPages = Math.ceil(taskCollectionCount / limit);
@@ -128,5 +157,16 @@ exports.deleteTask = async (req: Request, res: Response, next: any) => {
         await task.deleteOne();
 
         res.status(200).send(`Deleted Task ${id}`);
+    } catch (error: any) { next(error); };
+}
+
+exports.sortByCompletion = async (req: Request, res: Response, next: any) => {
+    try {
+
+        const task = await Task.find().sort({ dueDate: 'ascending' });
+        if (!task) return res.status(404).send(`Tasks not found`);
+
+
+        res.status(200).send(task);
     } catch (error: any) { next(error); };
 }
