@@ -70,12 +70,14 @@ exports.updateTaskDescription = async (req: Request, res: Response, next: any) =
 exports.markTaskCompleted = async (req: Request, res: Response, next: any) => {
     try {
         const { id } = req.params;
+        const { isComplete } = req.body;
 
         const task = await Task.findById(id);
         if (!task) return res.status(404).send(`Task not found`);
-        if (task.completed) return res.status(400).send(`Task ${id} already complete`)
 
-        task.completed = true;
+        if (!isComplete) task.completed = !task.completed;
+        else task.completed = isComplete;
+
         await task.save();
 
         res.status(200).send(`Marked Task ${id} completed`);
