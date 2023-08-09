@@ -19,11 +19,31 @@ exports.create = async (req: Request, res: Response, next: any) => {
     }
 }
 
+interface FindAllQuery {
+    limit: string;
+    page: string;
+    offset: string;
+}
+
 exports.findAll = async (req: Request, res: Response, next: any) => {
     try {
-        const tasks = await Task.find();
+        const limit = parseInt((req.query as unknown as FindAllQuery).limit);
+        const offset = parseInt((req.query as unknown as FindAllQuery).page);
 
-        res.status(200).send(tasks);
+        const tasksCollection = await Task.find().limit(limit).skip(offset);
+        const taskCollectionCount = await Task.count();
+
+        const totalPages = Math.ceil(taskCollectionCount / limit);
+        const currentPage = Math.ceil(taskCollectionCount % offset);
+
+        res.status(200).send({
+            data: tasksCollection,
+            paging: {
+                total: taskCollectionCount,
+                page: currentPage,
+                pages: totalPages
+            },
+        });
     } catch (error: any) { next(error); }
 }
 
