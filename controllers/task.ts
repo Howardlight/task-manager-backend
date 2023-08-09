@@ -21,16 +21,15 @@ exports.create = async (req: Request, res: Response, next: any) => {
 
 interface FindAllQuery {
     limit: string;
-    page: string;
     offset: string;
 }
 
 exports.findAll = async (req: Request, res: Response, next: any) => {
     try {
         const limit = parseInt((req.query as unknown as FindAllQuery).limit);
-        const offset = parseInt((req.query as unknown as FindAllQuery).page);
+        const offset = parseInt((req.query as unknown as FindAllQuery).offset);
 
-        const tasksCollection = await Task.find().limit(limit).skip(offset);
+        const tasksCollection = await Task.find().skip(offset).limit(limit);
         const taskCollectionCount = await Task.count();
 
         const totalPages = Math.ceil(taskCollectionCount / limit);
